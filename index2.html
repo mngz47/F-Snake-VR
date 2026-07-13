@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>F Snake</title>
+<link rel=stylesheet href=rr/style.css />
+<link rel=stylesheet href=rr/bootstrap.min.css />
+<link rel=stylesheet href=rr/mobstyle.css />
+<link rel="icon" type="image/jpg" href="https://raw.githubusercontent.com/mngz47/productlists-resources/main/p_logo.jpg">
+
+<meta name="autor" content="@mongezisibongakonke" />
+
+</head>
+<body>
+<script src=rr/api.js ></script>
+<div style="width:600px;margin-left:auto;margin-right:auto;background:gray;" >
+<div style="width:600px;" >
+<span style="font-size:3em;">F Snake</span>
+<span id="speed"  style="font-size:1.7em;float:right;color:green;margin:7px;" ></span>
+<span id="points"  style="font-size:1.7em;float:right;color:green;margin:7px;" ></span>
+</div>
+
+<div id="canvas" style="width:600px;height:400px;border: 3px solid blue;background:white;"  >
+<span id="food" style="font-size:2.2em;position:absolute;" >O</span>
+<span id="stacle" style="font-size:2.2em;position:absolute;" style="color:purple;" >X</span>
+<span id="head" style="color:red;font-size:2.2em;position:absolute;left:400px;top:200px;" >F</span>
+</div>
+</div>
+
+<div style="text-align:center;font-size:2.2em;">
+<a href=# onclick="d='l';return false;"  >L</a>
+<a href=# onclick="d='t';return false;"  >T</a>
+<a href=# onclick="d='b';return false;"  >D</a>
+<a href=# onclick="d='r';return false;" >R</a>
+</div>
+<script>
+
+var points = 0;
+
+var d = "r";
+
+var mode = "easy";
+
+var stage = 1;
+
+document.body.onkeydown = function(e){ // Detect keys pressed on keyboard to change the direction of movement of the snake head F
+
+if(e.key=="a" | e.key=="ArrowLeft"){
+d="l";
+}else if(e.key=="d" | e.key=="ArrowRight"){
+d="r";
+}else if(e.key=="w" | e.key=="ArrowUp"){
+d="t";
+}else if(e.key=="s" | e.key=="ArrowDown"){
+d="b";
+}
+};
+
+var speed = 60;
+
+var game_over = false;
+
+async function start(){
+
+while(!game_over){ //continuosly move the snake head so long as the game is not over
+
+if(d=="r"){ //Moves snake head to the right
+
+  if(e('head').offsetLeft>=(e('canvas').offsetWidth+e('canvas').offsetLeft-20)){ // Detect the bound of the canvas towards the right
+    e('head').style.left= e('canvas').offsetLeft+"px"; // move the snake head to the beginning of the canvas on the left
+  }else{ // If snake head hasn't reached canvas bound toward the right 
+    e('head').style.left= (e('head').offsetLeft+3)+"px"; // Move the snake by 3px to the right
+  }
+  
+}else if(d=="l"){ //Moves the snake head to the left 
+
+  if(e('head').offsetLeft<=e('canvas').offsetLeft){ // Detect the bound of the canvas towards the left
+    e('head').style.left = (e('canvas').offsetWidth+e('canvas').offsetLeft)+"px"; // move the snake head to the end of the canvas on the right
+  }else{ // If snake head hasn't reached canvas bound toward the left 
+    e('head').style.left = (e('head').offsetLeft-3)+"px"; // Move the snake by -3px to the left 
+  }
+  
+  
+}else if(d=="t"){ //Moves the snake head to the top
+  
+  if(e('head').offsetTop<=e('canvas').offsetTop){
+    e('head').style.top = (e('canvas').offsetHeight+e('canvas').offsetTop-20)+"px";
+  }else{
+    e('head').style.top = (e('head').offsetTop-3)+"px";
+  }
+  
+}else{ //Moves the snake head to the bottom
+  
+  if(e('head').offsetTop>=(e('canvas').offsetHeight+e('canvas').offsetTop-20)){
+    e('head').style.top = e('canvas').offsetTop+"px";
+  }else{
+    e('head').style.top = (e('head').offsetTop+3)+"px";
+  }
+  
+}
+
+
+if(((e('food').offsetTop+20)>e('head').offsetTop && (e('food').offsetTop-20)<e('head').offsetTop) && 
+((e('food').offsetLeft+20)>e('head').offsetLeft && (e('food').offsetLeft-20)<e('head').offsetLeft)){ //Detects if the head of the snake overlaps with food
+
+points+=1; // Gives the player a point for getting the food
+
+if(points>=14){ // Detects if user has gained enough points to move to next stage
+
+  if(stage==7){ // Detects completion of game if user finishes stage 7
+alert('Congradulations Game Complete');
+    // Alert and Confirm currently don't work on facebook games
+}else if(confirm('Congradulations Stage '+(stage)+' Complete. Ready for stage '+(stage+1)+'?')){ // Confirms if user is ready for next stage
+
+stage+=1; 
+points=0; //Resets points to prepare for new stage
+
+e('stacle').style.color = (stage==2?'red':(stage==3?'yellow':(color==4?'green':'purple'))); //Changes color of obsatcle for new stage
+setInterval(placeStacle,1000*(8-stage));//Changes speed of obstacle for new stage
+
+}else{ // If user is not ready to go to next stage
+location.reload();
+}
+  
+}
+
+e('points').innerHTML = 'POINTS('+points+')'; //Shows recent points to user
+placeFood(); //Places food onto recent randomised position
+
+}
+
+if(((e('stacle').offsetTop+20)>e('head').offsetTop && (e('stacle').offsetTop-20)<e('head').offsetTop) && 
+((e('stacle').offsetLeft+20)>e('head').offsetLeft && (e('stacle').offsetLeft-20)<e('head').offsetLeft)){ // Detects snake head overlap with obstacle
+
+alert('GAME OVER');
+game_over = true;
+location.reload();
+
+}
+
+show_body(e('head').offsetLeft,e('head').offsetTop); //renders the body of the snake
+
+speed = Math.round((40 - 40 * (points*3)/15)); //increases speed of the snake as the points increase
+
+// e('speed').innerHTML = 'SPEED:'+Math.round(7 * (points*3)/15);
+
+await new Promise(r => setTimeout(r, speed));
+
+}
+}
+
+start();
+
+
+/*
+
+setInterval(function(){
+
+},speed);
+
+*/
+
+var body_left = [];
+var body_top = [];
+
+function show_body(x,y){
+
+var s_body  = e('canvas').getElementsByClassName('s_body').length;
+
+for(var a=0;a<(s_body-(15*points));a++){
+
+if(a<(s_body-s_body*points/15)){
+
+//shed skin - hide body trail
+
+if(mode=="hard"){
+e('canvas').getElementsByClassName('s_body')[a].style.display = 'none'; 
+}else if(mode=="easy"){
+if(a<(15*points)){
+e('canvas').getElementsByClassName('s_body')[a].remove(); 
+}
+}
+
+}else if(a>(s_body-s_body*points/15)){
+//detect if head touching snake body
+if(((e('canvas').getElementsByClassName('s_body')[a].offsetTop+5)>e('head').offsetTop && (e('canvas').getElementsByClassName('s_body')[a].offsetTop-5)<e('head').offsetTop) && 
+((e('canvas').getElementsByClassName('s_body')[a].offsetLeft+5)>e('head').offsetLeft && (e('canvas').getElementsByClassName('s_body')[a].offsetLeft-5)<e('head').offsetLeft)){
+alert('GAME OVER');
+game_over = true;
+location.reload();
+break;
+}
+}
+}
+
+for(var a=0;a<(points-1);a++){
+
+body_left[(a==0?0:a+1)] = (a==0?x:body_left[a]);
+body_top[(a==0?0:a+1)] = (a==0?y:body_top[a]);
+
+var s_b = ne('span');
+s_b.innerHTML = 'O';
+s_b.style.fontSize = '2.2em';
+
+var color = Math.round(4*Math.random());
+
+s_b.style.color = (color==1?'red':(color==2?'yellow':(color==3?'green':'purple')));
+
+s_b.className = 's_body';
+
+s_b.style.position = 'absolute';
+s_b.style.left = body_left[a]+'px';
+s_b.style.top = body_top[a]+'px';
+
+e('canvas').appendChild(s_b);
+
+}
+}
+
+function placeFood(){
+
+var tt = Math.random()*(e('canvas').offsetHeight+e('canvas').offsetTop-20);
+while(tt<e('canvas').offsetTop){
+tt =  Math.random()*(e('canvas').offsetHeight+e('canvas').offsetTop-20);
+}
+var ll = Math.random()*(e('canvas').offsetWidth+e('canvas').offsetLeft-20);
+while(ll<e('canvas').offsetLeft){
+ll =  Math.random()*(e('canvas').offsetWidth+e('canvas').offsetLeft-20);
+}
+
+e('food').style.top = tt+"px";
+e('food').style.left = ll+"px";
+}
+
+placeFood();
+
+var sw = 1;
+
+function placeStacle(){
+
+var tt = Math.random()*(e('canvas').offsetHeight+e('canvas').offsetTop-20);
+while(tt<e('canvas').offsetTop){
+tt =  Math.random()*(e('canvas').offsetHeight+e('canvas').offsetTop-20);
+}
+var ll = Math.random()*(e('canvas').offsetWidth+e('canvas').offsetLeft-20);
+while(ll<e('canvas').offsetLeft){
+ll =  Math.random()*(e('canvas').offsetWidth+e('canvas').offsetLeft-20);
+}
+
+e('stacle').style.top = (sw?e('food').style.top:tt+"px");
+e('stacle').style.left = (sw?ll+"px":e('food').style.left);
+
+sw = (sw?0:1)
+}
+
+//1000*(8-stage)
+
+setInterval(placeStacle,1000*(8-stage));
+
+</script>
+</body>
+</html>

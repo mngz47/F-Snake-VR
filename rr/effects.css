@@ -1,0 +1,13 @@
+.fall :hover {
+  position: absolute;
+  animation: move 1.5s forwards;
+}
+
+@keyframes move {
+  from {
+    bottom: 200px;
+  }
+  to {
+    bottom: 0;
+  }
+}

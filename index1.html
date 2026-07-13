@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>F Snake</title>
+<link rel=stylesheet href=rr/style.css />
+<link rel=stylesheet href=rr/bootstrap.min.css />
+
+<link rel=stylesheet href=rr/mobstyle.css />
+
+<meta name="autor" content="@mongezisibongakonke" />
+
+</head>
+<body>
+<script src=rr/api.js ></script>
+
+<iframe id=four_target src="https://mngz47.github.io/F-Snake/header.html" width="468" height="60" scrolling="no" border="0" marginwidth="0" style="border:none;" frameborder="0"></iframe>
+
+	<div class=forward >
+    <script>
+   
+    var affiliates = ["https://mngz47.github.io/F-Snake/header.html"];
+    var index = 0;
+    
+    function four_next(){
+		if(index<affiliates.length){
+			e('four_target').src = affiliates[index];
+			index++;
+		}else{
+		index = 0;	
+		}
+	  }
+  setInterval(function(){
+  four_next();
+  },14000);
+    </script>
+</div>
+
+
+<div style="width:600px;margin-left:auto;margin-right:auto;background:gray;" >
+<div style="width:600px;" >
+<span style="font-size:3em;">F Snake</span>
+<span id="speed"  style="font-size:1.7em;float:right;color:green;margin:7px;" ></span>
+<span id="points"  style="font-size:1.7em;float:right;color:green;margin:7px;" ></span>
+</div>
+
+<div id="canvas" style="width:600px;height:400px;border: 3px solid blue;background:white;"  >
+<span id="food" style="font-size:2.2em;position:absolute;" >O</span>
+<span id="stacle" style="font-size:2.2em;position:absolute;color:purple;" >X</span>
+<span id="head" style="color:red;font-size:2.2em;position:absolute;left:400px;top:200px;" >F</span>
+</div>
+</div>
+
+<div style="text-align:center;font-size:2.2em;">
+
+<table style="margin-left:auto;margin-right:auto;" >
+<tr><td><a href=# id=easy_mode onclick="mode='easy';this.className='highlight';e('hard_mode').className='';" >EASY</a></td><td></td><td><a href=# onclick="d='t';"  >T</a></td><td></td></tr>
+<tr><td></td><td><a href=# onclick="d='l';"  >L</a></td><td style="background-color:red;"></td><td><a href=# onclick="d='r';" >R</a></td></tr>
+<tr><td><a href=# id=hard_mode onclick="mode='hard';this.className='highlight';e('easy_mode').className='';" class="highlight" >HARD</a></td><td></td><td><a href=# onclick="d='b';"  >D</a></td><td></td></tr>
+</table>
+
+</div>
+<script>
+
+var points = 0;
+
+var d = "r";
+
+var mode = "hard";
+
+document.body.onkeydown = function(e){
+
+if(e.key=="a" | e.key=="ArrowLeft"){
+d="l";
+}else if(e.key=="d" | e.key=="ArrowRight"){
+d="r";
+}else if(e.key=="w" | e.key=="ArrowUp"){
+d="t";
+}else if(e.key=="s" | e.key=="ArrowDown"){
+d="b";
+}
+};
+
+var speed = 60;
+
+var game_over = false;
+
+async function start(){
+
+while(!game_over){
+
+if(d=="r"){
+//alert(e('head').style.left+"---"+e('head').offsetLeft+"---"+e('canvas').offsetWidth);
+
+if(e('head').offsetLeft>=(e('canvas').offsetWidth+e('canvas').offsetLeft-20)){
+
+e('head').style.left= e('canvas').offsetLeft+"px";
+}else{
+
+e('head').style.left= (e('head').offsetLeft+3)+"px";
+}
+}else if(d=="l"){
+if(e('head').offsetLeft<=e('canvas').offsetLeft){
+e('head').style.left = (e('canvas').offsetWidth+e('canvas').offsetLeft)+"px";
+
+}else{
+e('head').style.left = (e('head').offsetLeft-3)+"px";
+}
+}else if(d=="t"){
+if(e('head').offsetTop<=e('canvas').offsetTop){
+e('head').style.top = (e('canvas').offsetHeight+e('canvas').offsetTop-20)+"px";
+}else{
+e('head').style.top = (e('head').offsetTop-3)+"px";
+}
+}else{
+if(e('head').offsetTop>=(e('canvas').offsetHeight+e('canvas').offsetTop-20)){
+e('head').style.top = e('canvas').offsetTop+"px";
+}else{
+e('head').style.top = (e('head').offsetTop+3)+"px";
+}
+}
+
+
+if(((e('food').offsetTop+20)>e('head').offsetTop && (e('food').offsetTop-20)<e('head').offsetTop) && 
+((e('food').offsetLeft+20)>e('head').offsetLeft && (e('food').offsetLeft-20)<e('head').offsetLeft)){
+
+points+=1;
+
+if(points>=14){
+alert('Congradulations Max Points');
+location.reload();
+}
+
+e('points').innerHTML = 'POINTS('+points+')';
+placeFood();
+
+}
+
+if(((e('stacle').offsetTop+20)>e('head').offsetTop && (e('stacle').offsetTop-20)<e('head').offsetTop) && 
+((e('stacle').offsetLeft+20)>e('head').offsetLeft && (e('stacle').offsetLeft-20)<e('head').offsetLeft)){
+
+alert('GAME OVER');
+game_over = true;
+location.reload();
+
+}
+
+show_body(e('head').offsetLeft,e('head').offsetTop);
+
+speed = Math.round((40 - 40 * (points*3)/15));
+
+// e('speed').innerHTML = 'SPEED:'+Math.round(7 * (points*3)/15);
+
+await new Promise(r => setTimeout(r, speed));
+
+}
+}
+
+start();
+
+
+/*
+
+setInterval(function(){
+
+},speed);
+
+*/
+
+var body_left = [];
+var body_top = [];
+
+function show_body(x,y){
+
+var s_body  = e('canvas').getElementsByClassName('s_body').length;
+
+for(var a=0;a<(s_body-(15*points));a++){
+
+if(a<(s_body-s_body*points/15)){
+
+//shed skin - hide body trail
+
+if(mode=="hard"){
+e('canvas').getElementsByClassName('s_body')[a].style.display = 'none'; 
+}else if(mode=="easy"){
+if(a<(15*points)){
+e('canvas').getElementsByClassName('s_body')[a].remove(); 
+}
+}
+
+}else if(a>(s_body-s_body*points/15)){
+//detect if head touching snake body
+if(((e('canvas').getElementsByClassName('s_body')[a].offsetTop+5)>e('head').offsetTop && (e('canvas').getElementsByClassName('s_body')[a].offsetTop-5)<e('head').offsetTop) && 
+((e('canvas').getElementsByClassName('s_body')[a].offsetLeft+5)>e('head').offsetLeft && (e('canvas').getElementsByClassName('s_body')[a].offsetLeft-5)<e('head').offsetLeft)){
+alert('GAME OVER');
+game_over = true;
+location.reload();
+break;
+}
+}
+}
+
+for(var a=0;a<(points-1);a++){
+
+body_left[(a==0?0:a+1)] = (a==0?x:body_left[a]);
+body_top[(a==0?0:a+1)] = (a==0?y:body_top[a]);
+
+var s_b = ne('span');
+s_b.innerHTML = 'O';
+s_b.style.fontSize = '2.2em';
+
+var color = Math.round(4*Math.random());
+
+s_b.style.color = (color==1?'red':(color==2?'yellow':(color==3?'green':'purple')));
+
+s_b.className = 's_body';
+
+s_b.style.position = 'absolute';
+s_b.style.left = body_left[a]+'px';
+s_b.style.top = body_top[a]+'px';
+
+e('canvas').appendChild(s_b);
+
+}
+}
+
+function placeFood(){
+
+var tt = Math.random()*(e('canvas').offsetHeight+e('canvas').offsetTop-20);
+while(tt<e('canvas').offsetTop){
+tt =  Math.random()*(e('canvas').offsetHeight+e('canvas').offsetTop-20);
+}
+var ll = Math.random()*(e('canvas').offsetWidth+e('canvas').offsetLeft-20);
+while(ll<e('canvas').offsetLeft){
+ll =  Math.random()*(e('canvas').offsetWidth+e('canvas').offsetLeft-20);
+}
+
+e('food').style.top = tt+"px";
+e('food').style.left = ll+"px";
+}
+
+placeFood();
+
+var sw = 1;
+
+function placeStacle(){
+
+var tt = Math.random()*(e('canvas').offsetHeight+e('canvas').offsetTop-20);
+while(tt<e('canvas').offsetTop){
+tt =  Math.random()*(e('canvas').offsetHeight+e('canvas').offsetTop-20);
+}
+var ll = Math.random()*(e('canvas').offsetWidth+e('canvas').offsetLeft-20);
+while(ll<e('canvas').offsetLeft){
+ll =  Math.random()*(e('canvas').offsetWidth+e('canvas').offsetLeft-20);
+}
+
+e('stacle').style.top = (sw?e('food').style.top:tt+"px");
+e('stacle').style.left = (sw?ll+"px":e('food').style.left);
+
+sw = (sw?0:1)
+}
+
+setInterval(placeStacle,7000);
+
+</script>
+</body>
+</html>
